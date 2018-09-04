@@ -11,7 +11,8 @@ public class CreateCategoryTest extends BaseScript {
         // TODO prepare driver object
         String login = "webinar.test@gmail.com";
         String password = "Xcg7299bnSmMuRLp9ITw";
-        String categoryName = "shoes";
+        String categoryName = GeneralActions.generate(15);
+
         WebDriver driver = getConfiguredDriver();
         GeneralActions newBrows = new GeneralActions(driver);
         //login
@@ -21,6 +22,7 @@ public class CreateCategoryTest extends BaseScript {
         newBrows.createCategory(categoryName);
 
         // check that new category appears in Categories table
+        newBrows.waitForContentLoad("Women");
         WebElement checkNewCategory = driver.findElement(By.name("categoryFilter_name"));
         checkNewCategory.sendKeys(categoryName);
         checkNewCategory.submit();

@@ -10,6 +10,8 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.security.SecureRandom;
+
 /**
  * Contains main script actions that may be used in scripts.
  */
@@ -21,6 +23,20 @@ public class GeneralActions {
         this.driver = driver;
         wait = new WebDriverWait(driver, 30);
     }
+    /**
+     * Generates random string
+     */
+    private static final String ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_";
+    private static final SecureRandom RANDOM = new SecureRandom();
+
+    public static String generate(int count) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < count; ++i) {
+                sb.append(ALPHABET.charAt(RANDOM.nextInt(ALPHABET.length())));
+            }
+            return sb.toString();
+        }
+
 
     /**
      * Logs in to Admin Panel.
@@ -33,7 +49,7 @@ public class GeneralActions {
         driver.findElement(By.id("email")).sendKeys(login);
         driver.findElement(By.id("passwd")).sendKeys(password);
         driver.findElement(By.name("submitLogin")).click();
-        if (login == null && password == null) {
+        if (login == null || password == null) {
             throw new UnsupportedOperationException();
         }
     }
@@ -43,12 +59,14 @@ public class GeneralActions {
      * @param categoryName
      */
     public void createCategory(String categoryName) {
+            wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.className("page-title"))));
             Actions builder = new Actions(driver);
             builder.moveToElement(driver.findElement(By.id("subtab-AdminCatalog")));
             builder.moveToElement(driver.findElement(By.id("subtab-AdminProducts")));
             builder.moveToElement(driver.findElement(By.id("subtab-AdminCategories")));
             builder.click(driver.findElement(By.id("subtab-AdminCategories"))).perform();
 
+            waitForContentLoad("Women");
             WebElement creatNew = driver.findElement(By.id("page-header-desc-category-new_category"));
             creatNew.click();
             WebElement newName = driver.findElement(By.id("name_1"));
@@ -67,6 +85,7 @@ public class GeneralActions {
      */
     public void waitForContentLoad(String element) {
         // TODO implement generic method to wait until page content is loaded
+
         wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath(".//td[contains(., " + element + ")]"))));
         }
 }
